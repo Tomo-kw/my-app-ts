@@ -7,7 +7,7 @@ interface BoardProps {
     onClick: (i: number) => void;
 }
 
-const Board = (props: BoardProps) => {
+const Board: React.FC<BoardProps> = (props) => {
     const renderSquare = (i: number) => {
         return (
             <Square
