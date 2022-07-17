@@ -1,15 +1,33 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
-function Square(props) {
+
+// type層
+// リテラル型
+type ISquare = 'X' | 'O' | null;
+// ISquare型のvalue, 何も返さない無名関数のonClickを引数として受け取ることを型注釈で明示
+interface SquareProps {
+    value: ISquare
+    onClick: () => void
+}
+interface  BoardProps {
+    squares: ISquare[]
+    onClick: (i: number) => void
+}
+
+type History = {
+    squares: ISquare[]
+}
+
+function Square(props: SquareProps) {
     return (
         <button className="square" onClick={props.onClick}>
             {props.value}
         </button>
     );
 }
-class Board extends React.Component {
-    renderSquare(i) {
+class Board extends React.Component<BoardProps> {
+    renderSquare(i: number) {
         return (
             <Square
                 value={this.props.squares[i]}
@@ -39,8 +57,15 @@ class Board extends React.Component {
         );
     }
 }
-class Game extends React.Component {
-    constructor(props) {
+
+interface GameState {
+    history: History[]
+    stepNumber: number
+    xIsNext: boolean
+}
+
+class Game extends React.Component<{}, GameState> {
+    constructor(props: {}) {
         super(props);
         this.state = {
             history: [{ squares: Array(9).fill(null) }],
@@ -48,7 +73,8 @@ class Game extends React.Component {
             xIsNext: true,
         };
     }
-    handleClick(i) {
+
+    handleClick(i: number) {
         const history = this.state.history.slice(0, this.state.stepNumber + 1);
         const current = history[history.length - 1];
         const squares = current.squares.slice();
@@ -62,12 +88,14 @@ class Game extends React.Component {
             xIsNext: !this.state.xIsNext,
         });
     }
-    jumpTo(step) {
+
+    jumpTo(step: number) {
         this.setState({
             stepNumber: step,
             xIsNext: step % 2 === 0,
         });
     }
+
     render() {
         const history = this.state.history;
         const current = history[this.state.stepNumber];
@@ -91,7 +119,7 @@ class Game extends React.Component {
                 <div className="game-board">
                     <Board
                         squares={current.squares}
-                        onClick={(i) => this.handleClick(i)}
+                        onClick={(i: number) => this.handleClick(i)}
                     />
                 </div>
                 <div className="game-info">
@@ -102,7 +130,7 @@ class Game extends React.Component {
         );
     }
 }
-function calculateWinner(squares) {
+function calculateWinner(squares: Array<ISquare>) {
     const lines = [
         [0, 1, 2],
         [3, 4, 5],
